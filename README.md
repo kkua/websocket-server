@@ -4,4 +4,5 @@
 
 ## 消息格式
 
-服务器和客户端采用二进制消息进行通信，格式如[图](https://github.com/kkua/websocket-server/blob/master/protocol.svg)所示
+服务器和客户端采用二进制消息进行通信，其结构如下图
+![消息结构](https://raw.githubusercontent.com/kkua/websocket-server/master/protocol.svg?sanitize=true)
