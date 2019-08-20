@@ -12,7 +12,6 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 
 import io.netty.channel.Channel;
@@ -34,13 +33,15 @@ public class RequestDispatcher {
 
 	private static ExecutorService workerThreadPool;
 
-	public static void init(int workerThreadCount, ApplicationContext applicationContext,
-			RequestDispatcherBehavior dispatcherBehavior) {
+	public static void init(int workerThreadCount, ApplicationContext applicationContext) {
 		workerThreadPool = Executors.newFixedThreadPool(workerThreadCount);
 		context = applicationContext;
-		RequestDispatcher.dispatcherBehavior = dispatcherBehavior;
 	}
 
+	public static void setDispatcherBehavior(RequestDispatcherBehavior dispatcherBehavior) {
+		RequestDispatcher.dispatcherBehavior = dispatcherBehavior;
+	}
+	
 	public static <T> T getBean(Class<T> clazz) {
 		return context.getBean(clazz);
 	}
@@ -50,7 +51,7 @@ public class RequestDispatcher {
 		Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
 		if (methods != null) {
 			for (Method method : methods) {
-				RequestHandler handler = AnnotationUtils.findAnnotation(method, RequestHandler.class);
+				RequestHandler handler = method.getAnnotation(RequestHandler.class);
 				if (handler != null) {
 					addHandler(handler.value(), clazz, method);
 				}
@@ -140,11 +141,12 @@ public class RequestDispatcher {
 					}
 				}
 				Method method = clazzMehtodPair.getMethod();
+				Object[] handlerParams = buildHandlerParams(method, object, ctx);
+				if (handlerParams == null) {
+					onNoCorHandler(ctx, object);
+					return;
+				}
 				try {
-					Object[] handlerParams = buildHandlerParams(method, object, ctx);
-					if (handlerParams == null) {
-						onNoCorHandler(ctx, object);
-					}
 					method.invoke(context.getBean(clazzMehtodPair.getClazz()), handlerParams);
 				} catch (Exception e) {
 					log.error("Failed invoke handler, msgId: " + msgId, e);

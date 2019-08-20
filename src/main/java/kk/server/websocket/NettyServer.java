@@ -1,10 +1,9 @@
-package kk.server.application.sample;
+package kk.server.websocket;
 
 import java.net.InetSocketAddress;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -13,9 +12,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import kk.server.websocket.ServerChannelInitializer;
 
-@Component
+//@Component
 public class NettyServer {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
@@ -25,15 +23,20 @@ public class NettyServer {
 
 	private Channel channel;
 
+	/**
+	 * 启动服务
+	 */
 	public ChannelFuture run(InetSocketAddress address) {
 
 		ChannelFuture f = null;
 		try {
 			ServerBootstrap b = new ServerBootstrap();
-			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-					.childHandler(new ServerChannelInitializer()).option(ChannelOption.SO_BACKLOG, 1000)
-					.childOption(ChannelOption.SO_KEEPALIVE, true).childOption(ChannelOption.TCP_NODELAY, true);
-			f = b.bind(address).syncUninterruptibly();
+			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)// 设置如何接受连接
+					.childHandler(new ServerChannelInitializer()) // 配置Channel
+					.option(ChannelOption.SO_BACKLOG, 1000) // 设置缓冲区(链接个数)
+					.childOption(ChannelOption.SO_KEEPALIVE, true)// 启用心跳机制
+					.childOption(ChannelOption.TCP_NODELAY, true);
+			f = b.bind(address).syncUninterruptibly(); // 绑定端口，开始接收连接
 			channel = f.channel();
 		} catch (Exception e) {
 			logger.error("Netty start error", e);

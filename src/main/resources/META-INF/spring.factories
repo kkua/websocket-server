@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+kk.server.websocket.autoconfigure.NettyWebSocketAutoConfigure
