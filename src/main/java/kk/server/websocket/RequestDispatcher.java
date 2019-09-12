@@ -41,12 +41,12 @@ public class RequestDispatcher {
 	public static void setDispatcherBehavior(RequestDispatcherBehavior dispatcherBehavior) {
 		RequestDispatcher.dispatcherBehavior = dispatcherBehavior;
 	}
-	
+
 	public static <T> T getBean(Class<T> clazz) {
 		return context.getBean(clazz);
 	}
 
-	public static void scanSpringBean(Object bean) {
+	protected static void scanSpringBean(Object bean) {
 		Class<? extends Object> clazz = bean.getClass();
 		Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
 		if (methods != null) {
@@ -90,26 +90,26 @@ public class RequestDispatcher {
 		}
 	}
 
-	private static Object[] buildHandlerParams(Method method, OnlineObject object, MessageHandlerContext context) {
+	private static Object[] buildHandlerArgs(Method method, OnlineObject object, MessageHandlerContext context) {
 		Class<?>[] paramTypes = method.getParameterTypes();
 		int methodParamCount = paramTypes.length;
 		if (methodParamCount == 0) {
 			return null;
 		}
-		List<Object> paramsToBePassed = new ArrayList<Object>();
+		List<Object> handlerArgs = new ArrayList<Object>();
 		boolean rightObject = false;
 		for (int i = 0; i < methodParamCount; ++i) {
 			if (paramTypes[i].isInstance(object)) {
-				paramsToBePassed.add(object);
+				handlerArgs.add(object);
 				rightObject = true;
 			} else if (paramTypes[i].isInstance(context)) {
-				paramsToBePassed.add(context);
+				handlerArgs.add(context);
 			} else {
-				paramsToBePassed.add(null);
+				handlerArgs.add(null);
 			}
 		}
 		if (rightObject) {
-			return paramsToBePassed.toArray();
+			return handlerArgs.toArray();
 		} else {
 			return null;
 		}
@@ -140,16 +140,20 @@ public class RequestDispatcher {
 						clazzMehtodPair = entry.getValue();
 					}
 				}
-				Method method = clazzMehtodPair.getMethod();
-				Object[] handlerParams = buildHandlerParams(method, object, ctx);
-				if (handlerParams == null) {
+				Method handler = clazzMehtodPair.getMethod();
+				Object[] handlerArgs = buildHandlerArgs(handler, object, ctx);
+				if (handlerArgs == null) {
 					onNoCorHandler(ctx, object);
 					return;
 				}
 				try {
-					method.invoke(context.getBean(clazzMehtodPair.getClazz()), handlerParams);
+					handler.invoke(context.getBean(clazzMehtodPair.getClazz()), handlerArgs);
 				} catch (Exception e) {
-					log.error("Failed invoke handler, msgId: " + msgId, e);
+					if (dispatcherBehavior != null) {
+						dispatcherBehavior.onHandlerException(handler, object, ctx, e);
+					} else {
+						log.error("Failed invoke handler, msgId: " + msgId, e);
+					}
 				} finally {
 					MessageUtil.returnMessageHandlerContext(ctx);
 				}

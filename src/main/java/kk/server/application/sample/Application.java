@@ -1,5 +1,7 @@
 package kk.server.application.sample;
 
+import java.lang.reflect.Method;
+
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.springframework.boot.SpringApplication;
@@ -24,6 +26,14 @@ public class Application {
 				// TODO 发现请求没有对应处理方法时
 
 			}
+
+			@Override
+			public void onHandlerException(Method handler, OnlineObject object, MessageHandlerContext ctx,
+					Exception e) {
+				// TODO RequestHandler异常处理
+
+			}
+
 		});
 		OnlineObjectManager.getInstance().init(User.class, new PoolableFactory<User>() {
 
