@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,9 @@ public class RequestDispatcher {
 
 	private static RequestDispatcherBehavior dispatcherBehavior = null;
 
-	private static ExecutorService workerThreadPool;
+	private static ExecutorService workerThreadPool = null;
+	
+	private static int shutdownTimeout = 3;
 
 	public static void init(int workerThreadCount, ApplicationContext applicationContext) {
 		workerThreadPool = Executors.newFixedThreadPool(workerThreadCount);
@@ -168,6 +171,20 @@ public class RequestDispatcher {
 		});
 	}
 
+	public static void shutdownGracefully() {
+		if (workerThreadPool == null) {
+			return;
+		}
+		workerThreadPool.shutdown();
+		try {
+			workerThreadPool.awaitTermination(shutdownTimeout, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			log.error("thread pool awaitTermination interrupted:", e);
+		} finally {
+			workerThreadPool.shutdownNow();
+		}
+	}
+	
 }
 
 class ClazzMehtodPair {

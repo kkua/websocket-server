@@ -5,12 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import kk.server.websocket.NettyWebSocketSelector;
-import kk.server.websocket.NettyWebsocketInitializer;
+import kk.server.websocket.NettyWebSocketInitializer;
 
 
 @Configuration
 @Import(NettyWebSocketSelector.class)
-@ConditionalOnMissingBean(NettyWebsocketInitializer.class)
+@ConditionalOnMissingBean(NettyWebSocketInitializer.class)
 public class NettyWebSocketAutoConfigure {
 	
 }

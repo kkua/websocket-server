@@ -31,12 +31,10 @@ public class NettyServer {
 		ChannelFuture f = null;
 		try {
 			ServerBootstrap b = new ServerBootstrap();
-			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)// 设置如何接受连接
-					.childHandler(new ServerChannelInitializer()) // 配置Channel
-					.option(ChannelOption.SO_BACKLOG, 1000) // 设置缓冲区(链接个数)
-					.childOption(ChannelOption.SO_KEEPALIVE, true)// 启用心跳机制
-					.childOption(ChannelOption.TCP_NODELAY, true);
-			f = b.bind(address).syncUninterruptibly(); // 绑定端口，开始接收连接
+			b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+					.childHandler(new ServerChannelInitializer()).option(ChannelOption.SO_BACKLOG, 1000)
+					.childOption(ChannelOption.SO_KEEPALIVE, true).childOption(ChannelOption.TCP_NODELAY, true);
+			f = b.bind(address).syncUninterruptibly();
 			channel = f.channel();
 		} catch (Exception e) {
 			logger.error("Netty start error", e);

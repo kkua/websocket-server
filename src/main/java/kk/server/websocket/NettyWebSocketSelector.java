@@ -8,7 +8,7 @@ public class NettyWebSocketSelector implements ImportSelector, Ordered {
 
 	@Override
 	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-		return new String[] { NettyWebsocketInitializer.class.getName() };
+		return new String[] { NettyWebSocketInitializer.class.getName() };
 	}
 
 	@Override
