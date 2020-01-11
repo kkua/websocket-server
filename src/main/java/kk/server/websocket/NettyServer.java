@@ -13,7 +13,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
-//@Component
 public class NettyServer {
 
 	private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
@@ -23,11 +22,7 @@ public class NettyServer {
 
 	private Channel channel;
 
-	/**
-	 * 启动服务
-	 */
 	public ChannelFuture run(InetSocketAddress address) {
-
 		ChannelFuture f = null;
 		try {
 			ServerBootstrap b = new ServerBootstrap();
@@ -40,8 +35,8 @@ public class NettyServer {
 			logger.error("Netty start error", e);
 		} finally {
 			if (f != null && f.isSuccess()) {
-				logger.info("Netty server listening " + address.getHostName() + " on port " + address.getPort()
-						+ " and ready for connections...");
+				logger.info("Netty server listening {} on port {} and ready for connections...", address.getHostName(),
+						address.getPort());
 			} else {
 				logger.error("Netty server start up Error!");
 			}

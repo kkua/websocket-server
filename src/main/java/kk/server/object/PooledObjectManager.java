@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("unchecked")
 public class PooledObjectManager {
 
-	private static final Logger log = LoggerFactory.getLogger(PooledObjectManager.class);
+	private static final Logger logger = LoggerFactory.getLogger(PooledObjectManager.class);
 
 	private static Map<Class<? extends Poolable>, GenericObjectPool<? extends Poolable>> objectPoolMap = new HashMap<>();
 	private static GenericObjectPoolConfig<? extends Poolable> defaultPoolConfig = new GenericObjectPoolConfig<>();
@@ -51,7 +51,7 @@ public class PooledObjectManager {
 	public static <T extends Poolable> void returnObject(T p) {
 		GenericObjectPool<T> pool = ((GenericObjectPool<T>) objectPoolMap.get(p.getClass()));
 		if (pool == null) {
-			log.error("Object " + p.getClass() + " didn't configured to use object pool.");
+			logger.error("Object " + p.getClass() + " didn't configured to use object pool.");
 			return;
 		}
 		pool.returnObject(p);

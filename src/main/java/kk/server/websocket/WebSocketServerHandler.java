@@ -114,13 +114,13 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-		logger.debug("Client [" + ctx.channel().remoteAddress() + "] connected");
+		logger.debug("Client [{}] connected", ctx.channel().remoteAddress());
 	}
 
 	@Override
 	public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
 		OnlineObjectManager.getInstance().disconnected(ctx.channel());
-		logger.debug("Client [" + ctx.channel().remoteAddress() + "] closed normally.");
+		logger.debug("Client [{}] closed normally.", ctx.channel().remoteAddress());
 	}
 
 	private static String getWebSocketLocation(FullHttpRequest req) {

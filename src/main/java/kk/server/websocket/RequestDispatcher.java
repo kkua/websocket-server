@@ -23,7 +23,7 @@ import kk.server.object.OnlineObjectManager;
 
 public class RequestDispatcher {
 
-	private static final Logger log = LoggerFactory.getLogger(RequestDispatcher.class);
+	private static final Logger logger = LoggerFactory.getLogger(RequestDispatcher.class);
 
 	// <msgId, <onlineObjectParamType, clazzMehtodPair>>
 	private static HashMap<Integer, Map<Class<?>, ClazzMehtodPair>> handlerMethodMap = new HashMap<>();
@@ -62,7 +62,7 @@ public class RequestDispatcher {
 		}
 	}
 
-	private static void addHandler(int msgId, Class<?> clazz, Method method) throws RuntimeException {
+	private static void addHandler(int msgId, Class<?> clazz, Method method) {
 		Class<?>[] paramTypes = method.getParameterTypes();
 		Class<?> onlineObjectParamType = null;
 		for (Class<?> paramType : paramTypes) {
@@ -83,8 +83,8 @@ public class RequestDispatcher {
 				for (ClazzMehtodPair pair : clazzMethodMap.values()) {
 					builder.append(pair.getMethod()).append(", ");
 				}
-				builder.append(method).append(", ").setCharAt(builder.length() - 2, ']');
-				builder.append(" are wrong, confused to determin which handler should be used when recieve request ")
+				builder.append(method).append(']')
+						.append(" are wrong, confused to determin which handler should be used when recieve request ")
 						.append(msgId).append('.');
 				throw new RuntimeException(builder.toString());
 			} else {
@@ -155,7 +155,7 @@ public class RequestDispatcher {
 					if (dispatcherBehavior != null) {
 						dispatcherBehavior.onHandlerException(handler, object, ctx, e);
 					} else {
-						log.error("Failed invoke handler, msgId: " + msgId, e);
+						logger.error("Failed invoke handler, msgId: " + msgId, e);
 					}
 				} finally {
 					MessageUtil.returnMessageHandlerContext(ctx);
@@ -179,7 +179,7 @@ public class RequestDispatcher {
 		try {
 			workerThreadPool.awaitTermination(shutdownTimeout, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
-			log.error("thread pool awaitTermination interrupted:", e);
+			logger.error("thread pool awaitTermination interrupted:", e);
 		} finally {
 			workerThreadPool.shutdownNow();
 		}
