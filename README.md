@@ -29,7 +29,7 @@ OnlineObjectManager.getInstance().init(User.class, new PoolableFactory<User>() {
 ```
 ### 3.RequestHandler注解
 
-`@RequestHandler`用于修饰处理请求的方法，注解的值是请求id（消息结构图中的`msgId`字段）。`RequestDispatcher`根据`msgId`自动通过反射调用相应的方法。这些方法的参数列表的类型是`OnlineObject`或`OnlineObject`子类类型（必要，下文使用arg1表示）和`MessageHandlerContext`（可选，下文使用arg2表示）。一个`msgId`可以有多个**不同**的arg1类型RequestHandler方法，但如果arg1为限定为`OnlineObject`类型则所有的对应`msgId`的请求都会分发给该方法，此时不能再其他有处理该`msgId`的RequestHandler。通过arg2可以获得请求消息的数据，也可以生成响应消息数据（之后调用``OnlineObject`的`response`方法将响应消息数据发送给客户端）。`@RequestHandler`必须位于在`@Controller`类中，其他的类使用该注解没有效果。
+`@RequestHandler`用于修饰处理请求的方法，注解的值是请求id（消息结构图中的`msgId`字段）。`RequestDispatcher`根据`msgId`自动通过反射调用相应的方法。这些方法的参数列表的类型是`OnlineObject`或`OnlineObject`子类类型（必要，下文使用arg1表示）和`MessageHandlerContext`（可选，下文使用arg2表示）。一个`msgId`可以有多个**不同**的arg1类型RequestHandler方法，但如果arg1为限定为`OnlineObject`类型则所有的对应`msgId`的请求都会分发给该方法，此时不能再其他有处理该`msgId`的RequestHandler。通过arg2可以获得请求消息的数据，也可以生成响应消息数据（之后调用`OnlineObject`的`response`方法将响应消息数据发送给客户端）。`@RequestHandler`必须位于在`@Controller`类中，其他的类使用该注解没有效果。
 
 ### 4.配置RequestDispatcher（非必须的配置）
 
